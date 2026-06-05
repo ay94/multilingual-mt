@@ -61,6 +61,9 @@ Languages this workflow has been applied to:
 | Language | Notebook | Notes |
 |---|---|---|
 | Afrikaans | [`benchmarks/af/`](benchmarks/af/) | mbart-large-50, madlad400, opus-mt-mul-en, opus-mt-gem-gem |
+| Farsi | [`benchmarks/fa/`](benchmarks/fa/) | mbart-large-50 on MIZAN and PEPC |
+
+See [`project-log.md`](project-log.md) for a running log of all evaluation runs across languages.
 
 ## Installation
 
