@@ -71,6 +71,10 @@ Note: batching requires padding (`padding=True` when tokenising) to align sequen
 
 Translation output columns to record: `source`, `target` (gold standard), then one column per model.
 
+**GPU memory reference (Tesla V100, batch size 16):** mbart-large-50 uses approximately 14,926 MiB VRAM; Helsinki-NLP opus models use approximately 9,000–13,000 MiB depending on language pair. Both fit within a 16GB V100; batch size 32 on mbart approaches the memory limit on a 40GB A100 (38.9/40GB observed).
+
+**Known model issue — mBART Spanish→English:** mbart-large-50 shows unreliable behaviour on Spanish→English translation specifically. This is a documented community-reported issue and was reproduced in evaluation. For Spanish→English, Helsinki-NLP/opus-mt-es-en is the recommended alternative.
+
 ---
 
 ## Stage 3 — Evaluation
