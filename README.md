@@ -9,6 +9,7 @@ Machine translation evaluation toolkit — benchmarking translation models acros
 | `template.ipynb` | Workflow template — dataset loading, translation, METEOR, BERTScore, error analysis. Adapt for any language pair. |
 | `evaluation-template.md` | Structured template for documenting model selection, metric scores and error analysis findings per language |
 | `WORKFLOW.md` | Full methodology — model types, computational benchmarks, metric explanations, language-specific considerations |
+| `considerations.md` | Reference material — metric score examples with real translations, idiom examples, language script and parsing challenges, out-of-domain entity problem |
 | `benchmarks/` | Per-language evaluation notebooks and notes |
 
 ## Evaluation workflow
