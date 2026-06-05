@@ -1,27 +1,29 @@
 # multilingual-mt
 
-Machine translation evaluation toolkit — benchmarking translation models across a range of languages, with automated metric evaluation (METEOR, BERTScore) and structured error analysis.
+Machine translation evaluation toolkit — benchmarking translation models across a range of languages, with automated metric evaluation (METEOR, BERTScore, mBERTScore) and structured error analysis.
 
-## Components
+## Documentation
 
 | File | Description |
 |---|---|
-| `template.ipynb` | Workflow template — dataset loading, translation, METEOR, BERTScore, error analysis. Adapt for any language pair. |
-| `evaluation-template.md` | Structured template for documenting model selection, metric scores and error analysis findings per language |
-| `WORKFLOW.md` | Full methodology — model types, computational benchmarks, metric explanations, language-specific considerations |
-| `metrics.md` | Metrics reference — BLEU, METEOR, TER, ROUGE, BERTScore: how each works, when to use it, with references |
-| `considerations.md` | Reference material — metric score examples with real translations, idiom examples, language script and parsing challenges, out-of-domain entity problem |
-| `benchmarks/` | Per-language evaluation notebooks and notes |
+| [`WORKFLOW.md`](WORKFLOW.md) | End-to-end methodology — model types, deployment options, computational benchmarks, three-stage workflow, metric selection by use case |
+| [`metrics.md`](metrics.md) | Metrics reference — BLEU, METEOR, TER, ROUGE, BERTScore: how each works, when to use it, with references |
+| [`considerations.md`](considerations.md) | Reference material — metric score examples with real translations, evaluation data caveats, idiom challenges, language script and parsing issues, out-of-domain entity problem |
+| [`evaluation-template.md`](evaluation-template.md) | Structured template for documenting model selection, computational results, metric scores and error analysis per language |
 
-## Evaluation workflow
+## Notebooks
 
-Full methodology: [WORKFLOW.md](WORKFLOW.md)
+| File | Description |
+|---|---|
+| [`template.ipynb`](template.ipynb) | Workflow template — dataset loading, translation, METEOR, BERTScore, mBERTScore, error analysis. Adapt for any language pair. |
 
-Three-stage process:
+## Benchmarks
 
-1. **Exploratory** — identify a parallel benchmark corpus and candidate translation models for the target language
-2. **Translation** — run candidate models, record outputs and computational performance (CPU vs GPU)
-3. **Evaluation** — score with METEOR and BERTScore, sample low-scoring translations for manual error analysis
+| Language | Notes |
+|---|---|
+| [Afrikaans](benchmarks/af/) | mbart-large-50 on Tatoeba |
+| [Farsi](benchmarks/fa/) | mbart-large-50 on MIZAN and PEPC |
+| [Spanish](benchmarks/es/) | mBART vs Helsinki on Europarl + OPUS — Helsinki recommended |
 
 ## Languages
 
@@ -29,8 +31,8 @@ Languages this workflow has been applied to:
 
 - Afrikaans
 - Arabic
-- Bulgarian
 - Bengali
+- Bulgarian
 - Czech
 - Farsi
 - French
@@ -58,16 +60,6 @@ Languages this workflow has been applied to:
 - Xhosa
 - Zulu
 
-## Benchmarks
-
-| Language | Notebook | Notes |
-|---|---|---|
-| Afrikaans | [`benchmarks/af/`](benchmarks/af/) | mbart-large-50, madlad400, opus-mt-mul-en, opus-mt-gem-gem |
-| Farsi | [`benchmarks/fa/`](benchmarks/fa/) | mbart-large-50 on MIZAN and PEPC |
-| Spanish | [`benchmarks/es/`](benchmarks/es/) | mBART vs Helsinki on Europarl + OPUS; Helsinki recommended |
-
-See [`project-log.md`](project-log.md) for a running log of all evaluation runs across languages.
-
 ## Installation
 
 ```bash
@@ -81,12 +73,12 @@ from transformers import MBartForConditionalGeneration, MBart50TokenizerFast
 
 model     = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
 tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
-tokenizer.src_lang = "af_ZA"
+tokenizer.src_lang = "es_XX"
 
-inputs = tokenizer("Ek haat om te wag.", return_tensors="pt")
+inputs     = tokenizer("Hola, ¿cómo estás?", return_tensors="pt")
 translated = model.generate(**inputs, forced_bos_token_id=tokenizer.lang_code_to_id["en_XX"])
 print(tokenizer.decode(translated[0], skip_special_tokens=True))
-# I hate waiting.
+# Hello, how are you?
 ```
 
 See [`template.ipynb`](template.ipynb) for the full evaluation workflow.
