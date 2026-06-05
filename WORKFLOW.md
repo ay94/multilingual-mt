@@ -54,6 +54,8 @@ Note: batching requires padding (`padding=True` when tokenising) to align sequen
 
 1. **Benchmark dataset identification** — find a parallel corpus that represents the type of text in the project. It must not have been used in training the candidate models. The [Helsinki-NLP OPUS](https://github.com/Helsinki-NLP/OPUS-MT-train) and [Tatoeba Challenge](https://github.com/Helsinki-NLP/Tatoeba-Challenge) corpora are standard starting points.
 
+   **Translation direction matters.** Most parallel corpora are created by translating from one language into another and then human-correcting the result. If you are evaluating Arabic→English translation and the benchmark was originally created in the English→Arabic direction (English source, Arabic translation), the "gold standard" English side is itself machine-generated and human-corrected — not a native English original. Evaluating against this introduces noise. Always check which direction a corpus was constructed in and ensure it matches the direction you are evaluating. This is a common source of misleadingly low scores — see the Turkish MT results as a documented example.
+
 2. **Model exploration** — identify candidate models on HuggingFace for the target language pair. Consider:
    - Model type (one-to-one vs many-to-many)
    - Hosting options (local, HuggingFace Inference API, self-hosted TorchServe)
@@ -89,6 +91,7 @@ Translation output columns to record: `source`, `target` (gold standard), then o
 - F1: harmonic mean of precision and recall
 - Robust to paraphrasing and morphological variation — particularly useful for Arabic, Turkish, Urdu
 - Can be applied monolingually (gold standard vs translation) or multilingually (source vs translation) depending on availability of gold standard
+- **Alignment with topic modelling:** BERTScore operates in the same embedding space that topic models use to identify thematic similarity. This makes it particularly well-suited as the primary evaluation metric when translation is a pre-processing step for topic modelling — a translation that scores well on BERTScore is more likely to produce topic representations that are semantically consistent with the source, compared to a translation that scores well only on surface-level metrics like BLEU.
 
 **mBERTScore** — multilingual variant of BERTScore, applied when comparing across languages (source vs translation) without a gold standard
 
