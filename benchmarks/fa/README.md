@@ -20,8 +20,6 @@ Preferred benchmark for Farsi evaluation.
 
 ## Evaluation runs
 
-See [project-log.md](../../project-log.md) for run details.
-
 | Dataset | Samples | Speed | Notes |
 |---|---|---|---|
 | MIZAN | 10K | 1.33s/it | Weak gold standard — inconclusive |
