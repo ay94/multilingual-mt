@@ -4,6 +4,19 @@ Reference material for machine translation evaluation. Covers metric interpretat
 
 ---
 
+## Overview
+
+When evaluating machine translation models for NLP tasks, translation accuracy can be broken down into several sub-categories, each requiring different objective functions to measure:
+
+- **Grammar / Fluency** — the natural flow of the translated text; how realistic and human the translation feels
+- **Semantic accuracy** — preservation of meaning; the translation maintains the same semantics as the original
+- **Idiomatic language** — the capacity to translate idiomatic concepts that may not have a direct translation into English
+- **Named entity translation** — the ability to translate entity names correctly; mostly relevant to languages using non-Latin scripts, where names may be phonetic translations
+
+Each of these can have a significant impact on downstream NLP task performance. For topic modelling specifically, it is important that defining characteristics within the text — common entity names, and words relevant to the various themes — are translated accurately so that they cluster together correctly. A translation error on a key entity or theme word can scatter mentions across topics rather than grouping them.
+
+---
+
 ## Metric score interpretation
 
 ### METEOR examples
@@ -15,6 +28,8 @@ Reference material for machine translation evaluation. Covers metric interpretat
 | 0.5–0.6 | 来，让我给你打个比方。 | Here, let me give you an analogy. | Let me give you a comparison. |
 | < 0.5 | 回来时已经濒临死亡。 | She was back and near death. | When he came back, he was on the verge of death. |
 
+Translations with near-identical structure and synonymous words achieve around 0.7 in the best case. The score drops quickly as structural changes increase — yet in all four examples above, the semantics are still accurately preserved. The last example illustrates how subject-dropping languages (Chinese omits the subject when inferable from context) can cause a mismatched pronoun in the translation ("she" → "he"), pushing the score below 0.5 despite the overall meaning being correct.
+
 ### BERTScore examples
 
 | Range | Source (Chinese) | Gold standard | Translation |
@@ -23,7 +38,9 @@ Reference material for machine translation evaluation. Covers metric interpretat
 | 0.90–0.95 | 因为正值夏天，我穿的是短裤 | It was summertime: I had shorts on. | Because it's summertime, I wear shorts |
 | < 0.90 | 我们会努力追赶 | We could align ourselves with it. | We'll try to catch up |
 
-Note: the lowest observed BERTScore in this dataset was approximately 0.83. Scores below 0.90 warrant manual review.
+The first example is semantically close but uses different words and a reduced structure — BERTScore handles this well. The other two examples highlight a known limitation: despite being slightly off in matching the semantics of the gold standard, they maintain relatively high scores. This suggests a threshold somewhere in the 0.90–0.95 range where semantic accuracy begins to taper off. **Note:** the last example's gold standard ("We could align ourselves with it") is not actually an accurate translation of the source — a good reminder that low scores can reflect gold standard quality rather than model failure, and manual review is necessary before drawing conclusions.
+
+The lowest observed BERTScore in this dataset was approximately 0.83. Scores below 0.90 warrant manual review.
 
 ---
 
@@ -52,7 +69,9 @@ Many translation models (especially one-to-one Helsinki-NLP models) are trained 
 
 This has a direct downstream impact on NER and topic modelling. If NER runs on translated text, missed or corrupted entity spans will produce gaps in the entity extraction. For topic modelling, cross-language clustering of the same entity depends on the entity name appearing consistently in both languages — if the model translates it differently (or not at all) across documents, the same entity will not cluster together.
 
-**Code switching** — text that mixes two languages (common in Indonesian, Tagalog, Arabic social media, sometimes Chinese) affects language detection and model performance. Most models are not trained on code-switched text and will produce degraded output on mixed-language sentences.
+**Code switching** — text that mixes two languages (common in Indonesian, Tagalog, Arabic social media, sometimes Chinese) affects language detection and model performance. Most models are not trained on code-switched text and will produce degraded output on mixed-language sentences. See [Yong et al. (2023)](https://arxiv.org/abs/2311.12405) for a survey of code-switching challenges in LLMs.
+
+**Multi-lingual text** — documents where more than one language appears (beyond code switching — e.g. multilingual reports, parallel content in one file) affect language detection at the document level and may also degrade model performance if the dominant language is misidentified.
 
 ---
 

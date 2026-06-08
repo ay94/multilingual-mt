@@ -64,6 +64,8 @@ Variants:
 
 **Use when:** recall matters as much as precision, or for summarisation tasks alongside translation.
 
+**Caution:** upon inspection ROUGE can be misleading for MT evaluation — n-gram overlap does not capture valid paraphrases or synonymous word choices, causing accurate translations to score poorly. Use alongside METEOR or BERTScore rather than in isolation.
+
 ---
 
 ## BERTScore
@@ -90,6 +92,21 @@ For each token in the candidate sentence, BERTScore finds the token in the refer
 - Sensitive to paraphrasing — appropriate when different wordings convey the same meaning
 - Applicable both monolingually (translation vs gold standard) and multilingually (translation vs source text)
 - Aligned with embedding-based downstream tasks: a translation that scores well on BERTScore is more likely to produce consistent representations in topic modelling and NER, which also operate in embedding space
+
+---
+
+## XLMScore (XLM-RoBERTa BERTScore)
+
+Applies the BERTScore framework using `xlm-roberta-base` — a multilingual model pre-trained on CommonCrawl data spanning over 100 languages — to evaluate translation quality.
+
+Unlike standard BERTScore, XLMScore compares the **translation against the original source sentence** rather than against a human-translated gold standard. This makes it the only metric in this toolkit that can be computed without any reference translation.
+
+**Use when:**
+- No gold standard exists for the language pair
+- You want to verify meaning preservation from source to translation independent of reference quality
+- Evaluating many-to-many translation where producing human references for every pair is impractical
+
+**Limitation:** because XLM-RoBERTa is a cross-lingual model, its embeddings may not capture fine-grained semantic distinctions within a single language as well as a monolingual model would. It is best used alongside METEOR and BERTScore rather than as a standalone metric.
 
 ---
 
