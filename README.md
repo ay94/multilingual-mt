@@ -22,8 +22,10 @@ Machine translation evaluation toolkit — benchmarking translation models acros
 | Language | Notes |
 |---|---|
 | [Afrikaans](benchmarks/af/) | mbart-large-50 on Tatoeba |
+| [Arabic](benchmarks/ar/) | mbart-large-50 on OPUS test set and UN Parallel Corpus — METEOR=0.678, BERTScore=0.964 |
 | [Farsi](benchmarks/fa/) | mbart-large-50 on MIZAN and PEPC |
 | [Spanish](benchmarks/es/) | mBART vs Helsinki on Europarl + OPUS — Helsinki recommended |
+| [Turkish](benchmarks/tr/) | mBART vs Helsinki on MaCoCu — mBART recommended (METEOR gap 0.034); Helsinki 2× faster |
 
 ## Languages
 
