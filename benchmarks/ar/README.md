@@ -52,6 +52,17 @@ GPU required for any production-scale run. CPU throughput on Arabic with MBART a
 
 ## Evaluation
 
+### Metric rationale
+
+Various evaluation criteria were explored — BLEU, METEOR, and BERTScore. BLEU was excluded because the aim here is not exact match: the goal is to capture the closest possible meaning, and BLEU's pure n-gram matching penalises valid paraphrases too harshly.
+
+METEOR and BERTScore were selected because they are complementary:
+
+- **METEOR** (Metric for Evaluation of Translation with Explicit ORdering) combines precision and recall with stemming, synonymy, and word order. It allows flexibility in word choice while capturing surface-level fidelity. It serves as the stringent criterion — illustrating divergence between the generated translation and the exact reference text.
+- **BERTScore** uses pre-trained BERT embeddings to map candidate and reference texts into high-dimensional vectors. It computes cosine similarity between token representations using greedy matching: for each candidate token, the highest similarity against any reference token is recorded (precision), and vice versa (recall). This aligns with the topic modelling objective — semantic content matters more than exact word match.
+
+Using both metrics together provides two signals: METEOR catches surface-level failures that BERTScore masks; BERTScore catches semantic preservation that METEOR penalises due to paraphrasing. A combined average is useful when the two diverge significantly.
+
 ### Scores
 
 #### OPUS test set (5,000 sentence pairs)
@@ -87,6 +98,12 @@ Lower METEOR on the UN corpus reflects the domain shift to formal policy and adm
 - A combined average of METEOR and BERTScore provides a more balanced signal when the two diverge significantly.
 
 ### Error analysis
+
+A random sample of 30 sentences was inspected under varying conditions: METEOR < 0.5, METEOR > 0.5, and BERTScore < 0.8. Key patterns from this analysis:
+
+**METEOR sensitivity to paraphrasing:** METEOR is significantly impacted when the translation model substitutes named entities with pronouns, alters verbs, or changes sentence structure — even when the meaning is fully preserved. BERTScore is unaffected in these cases. This was the dominant pattern in the sample.
+
+**BERTScore limitation — incorrect but fluent translations:** In several cases, translations were entirely wrong semantically, yet BERTScore remained high while METEOR was very low. This is a known limitation of embedding-based metrics: fluent, well-formed text can score high on cosine similarity even when factually incorrect. A combined METEOR+BERTScore average with a threshold is a practical workaround.
 
 Key patterns from manual inspection of 30 low-scoring sentences (METEOR < 0.5 or BERTScore < 0.8):
 
@@ -134,6 +151,15 @@ These cases show BERTScore remaining high while METEOR is near zero — the mode
 METEOR=0.678 on OPUS is acceptable for the use case — the residual gap from perfect alignment is attributable to paraphrasing, not semantic failure.
 
 For UN-style formal documents, expect METEOR ~0.40 — the model handles general Arabic well but specialised terminology is a known gap.
+
+---
+
+## Downstream: translate-then-cluster evaluation
+
+Stage 1 (this document) covers translation model selection and quality evaluation. The downstream study — applying topic modelling to Arabic→English translations and evaluating topic homogeneity across three setups (Arabic original, English gold standard, English translation) — is documented separately:
+
+- **Methodology and findings:** [`topic-modeling-recipes/docs/translation/`](https://github.com/ay94/topic-modeling-recipes/tree/main/docs/translation)
+- **Workflow notebook:** [`multilingual-topic-modeling/notebooks/workflow/04_translate_and_cluster.ipynb`](https://github.com/ay94/multilingual-topic-modeling/blob/main/notebooks/workflow/04_translate_and_cluster.ipynb)
 
 ---
 
